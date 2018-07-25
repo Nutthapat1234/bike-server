@@ -1,0 +1,14 @@
+setVelocity
+
+posChange
+
+getGameState
+“’getGameState’,”
+
+getPosition
+
+getVelocity
+
+setGameState
+
+setPlayerState
