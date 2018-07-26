@@ -24,6 +24,7 @@ class GameData():
     def __init__(self):
         self.pos =  {"x":0,"y":0,"z":0}
         self.zVelocity = 0
+        self.frequency = 0
         self.gameState = self.GAMESTATE.WAIT
         self.playerState = self.PLAYERSTATE.STOP
 
@@ -34,10 +35,12 @@ class GameData():
         self.pos["z"] += self.zVelocity #plus avg of loop after
         
     def setVelocity(self,freq):
-        v = (config.ENGING_Z_POSITION / config.AVERAGE_TIME) / freq
+        currentFreq = freq
+        averageFreq = (currentFequency-self.frequency)/2
+        self.frequency = freq
+        v = (config.ENGING_Z_POSITION / (config.AVERAGE_TIME*averageFreq))*freq
         self.zVelocity = v
 
-    #sure ?
     #for client(samsung VR) 
     def setGameState(self, gamestate): #Admin
         self.gameState = gamestate

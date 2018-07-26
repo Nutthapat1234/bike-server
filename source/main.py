@@ -31,7 +31,7 @@ class Server:
             newCommuThread = CommunicationThread(conn, addr, self.gameData)
             newCommuThread.start()
             self.connectionList.append(newCommuThread)
-
+            
 if __name__ == '__main__':
     hostName = socket.gethostbyname(socket.gethostname())
     
