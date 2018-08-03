@@ -21,8 +21,13 @@ class CommunicationThread(threading.Thread):
             data = self.connection.recv(1024)
             data = data.decode('utf-8')
             print('received data from', self.address, ':', data)
-            result = self.__executeCommand(data)
-            print('get result:', result)
+            threading.Thread(target=self.respondClient,args=[data]).start()                       
+
+    def respondClient(self,data):
+        result = self.__executeCommand(data)
+        print('get result:', result)
+        self.connection.send(str.encode(str(result)))
+        return result
 
     ############
     ## PUBLIC ##
@@ -32,6 +37,21 @@ class CommunicationThread(threading.Thread):
 
     def getAddress(self):
         return self.address
+
+    def getVelocity(self):
+        command = '"getVelocity",'
+        velocity = self.__executeCommand(command)
+        return velocity
+
+    def getPosition(self):
+        command = '"getPosition",'
+        position = self.__executeCommand(command)
+        return position
+
+    def getPlayerState(self):
+        command = '"getPlayerState",'
+        playerState = self.__executeCommand(command)
+        return playerState
 
     #####################
     ## PRIVATE HELPERS ##

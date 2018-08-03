@@ -28,9 +28,15 @@ class Server:
             conn, addr = self.socket.accept()
             
             print("Client connected from ip : " + str(addr))
-            newCommuThread = CommunicationThread(conn, addr, self.gameData)
+            newCommuThread = CommunicationThread(conn, addr, GameData(calculationThread))
             newCommuThread.start()
             self.connectionList.append(newCommuThread)
+            if(len(self.connectionList)== 1):#Config.CLIENT_LIMIT
+                calculationThread.setPlayerList(self.connectionList)
+            else:
+                continue
+           
+            
             
 if __name__ == '__main__':
     hostName = socket.gethostbyname(socket.gethostname())

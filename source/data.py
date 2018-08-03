@@ -1,16 +1,12 @@
 import config
-
-class GameState():
-    WAIT = -1
-    READY = 0
-    PLAY = 1
-    END = 2
+from communication import CommunicationThread
 
 
 class PlayerState():
-    STUG = -1
-    STOP = 0
+    STOP = -1
+    READY = 0
     RIDE = 1
+    FINISH = 2
 
 
 class GameData():
@@ -18,33 +14,31 @@ class GameData():
     ############
     ## STATIC ##
     ############
-    GAMESTATE = GameState()
     PLAYERSTATE = PlayerState()
 
-    def __init__(self):
-        self.pos =  {"x":0,"y":0,"z":0}
+    def __init__(self,calculationThread = None):
+        self.position =  0
         self.zVelocity = 0
         self.frequency = 0
-        self.gameState = self.GAMESTATE.WAIT
-        self.playerState = self.PLAYERSTATE.STOP
+        self.playerState = self.PLAYERSTATE.READY
+        self.calculationThread = calculationThread
 
     ####################
     ## PUBLIC SETTERS ##
     ####################
-    def posChange(self):
-        self.pos["z"] += self.zVelocity #plus avg of loop after
+    def posChange(self,pos):
+        self.pos["z"] += pos
         
     def setVelocity(self,freq):
-        currentFreq = freq
-        averageFreq = (currentFequency-self.frequency)/2
-        self.frequency = freq
-        v = (config.ENGING_Z_POSITION / (config.AVERAGE_TIME*averageFreq))*freq
+        floatFreq  = float(freq)
+        currentFreq = floatFreq
+        averageFreq = (currentFreq+self.frequency)/2
+        self.frequency = floatFreq
+        v = (config.ENDING_POSITION / (config.AVERAGE_TIME*averageFreq))*floatFreq
         self.zVelocity = v
-
-    #for client(samsung VR) 
-    def setGameState(self, gamestate): #Admin
-        self.gameState = gamestate
-
+        if(self.position <= config.ENDING_POSITION):
+            self.__positionCalculation()
+        
     def setPlayerState(self):
         if(self.zVelocity == 0):
             self.playerstate = self.PLAYERSTATE.STOP
@@ -54,13 +48,35 @@ class GameData():
     ####################
     ## PUBLIC GETTERS ##
     ####################
-    def getGameState(self):
-        return self.gameState
-
     def getPosition(self):
-        return self.pos
+        return self.position
 
     def getVelocity(self):
         return self.zVelocity
-
     
+    def getPlayerState(self):
+        if (self.zVelocity < 0):
+            self.playerstate = self.PLAYERSTATE.STOP
+        elif(self.zVelocity == 0):
+            self.playerstate = self.PLAYERSTATE.READY
+        elif(self.zVelocity > 0):
+            self.playerstate = self.PLAYERSTATE.RIDE
+        elif(self.position > 1):
+            self.playerstate = self.PLAYERSTATE.FINISH
+        return self.playerstate
+
+    #####################
+    ## PRIVATE HELPPER ##
+    #####################
+    def __positionCalculation(self):
+        if(self.calculationThread is None):
+            return
+        positionchange = self.zVelocity + self.calculationThread.getDeltaTime()
+        if positionchange > config.POSITION_LIMIT:
+            self.position += config.POSITION_LIMIT
+        else:
+            self.position += positionchange
+        
+
+        
+        
