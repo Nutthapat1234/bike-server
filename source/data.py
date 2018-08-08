@@ -3,7 +3,7 @@ import config
 
 class PLAYERSTATE:
     READY = 0
-    RIGING = 1
+    RIDING = 1
     FINISHED = 2
 
 
