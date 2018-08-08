@@ -35,7 +35,7 @@ class GameCalculationThread(threading.Thread):
             GameCalculator.updatePlayerPosition( player, deltaTime )
             GameCalculator.updatePlayerState( player )
 
-        GameCalculator.updateGameState( self.gameData
+        GameCalculator.updateGameState( self.gameData )
 
     def __updateTimeStamp(self):
         self.previousTimeStamp = currentTime()

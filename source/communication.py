@@ -76,7 +76,7 @@ class CommunicationThread(threading.Thread):
 
     def __getCorrespondingMethod(self, header):
         #admin actions
-        if header = 'resetGame':
+        if header == 'resetGame':
             return self.shareGameData.resetGame
         
         #client actions
