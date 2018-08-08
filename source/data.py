@@ -1,4 +1,4 @@
-import config
+from config import PLAYER_LIMIT
 
 # todo: create getter setter for GameData.
 

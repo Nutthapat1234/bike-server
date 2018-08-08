@@ -1,6 +1,8 @@
 import socket
 import threading
 
+from debugging import print
+
 class CommunicationThread(threading.Thread):
 
     def __init__(self, connection, addr, shareGameData, id):

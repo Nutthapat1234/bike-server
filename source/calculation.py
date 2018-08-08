@@ -1,6 +1,7 @@
 import threading
 from time import time as currentTime
 
+from debugging import print
 from config import FREQ_TO_VELOCITY, PLAYER_LIMIT
 from data import GameData, PLAYERSTATE, GAMESTATE
 
@@ -17,6 +18,7 @@ class GameCalculationThread(threading.Thread):
     ##############
     def run(self):
         print('start main game calculation thread')
+        self.__updateTimeStamp()
         
         while True:
             self.deltaTime = self.__calculateDeltaTime()
@@ -69,7 +71,7 @@ class GameCalculator:
         currentFrequency = player.getFrequency()
         currentPosition = player.getPosition()
         
-        if currentFreq is not 0:
+        if currentFrequency is not 0:
             updatedVelocity = FREQ_TO_VELOCITY * currentFrequency
             updatedPosition = currentPosition + updatedVelocity * deltaTime
             player.setVelocity( updatedVelocity )
@@ -78,7 +80,7 @@ class GameCalculator:
             player.setVelocity( 0 )
             
     @staticmethod
-    def updatePlayerState( self, player ):
+    def updatePlayerState( player ):
         playerPosition = player.getPosition()
         
         if playerPosition <= 0:
@@ -88,7 +90,7 @@ class GameCalculator:
         else: # in between (0, 1)
             updatedState = PLAYERSTATE.RIDING
 
-        player.setPlayerState( updatedPlayerState )
+        player.setPlayerState( updatedState )
 
     @staticmethod
     def updateGameState( gameData ):
@@ -102,7 +104,7 @@ class GameCalculator:
                 allReady = False
             if state is not PLAYERSTATE.FINISHED:
                 allFinished = False
-            if state is PLAYER.FINISHED:
+            if state is PLAYERSTATE.FINISHED:
                 someFinished = True
 
         if allReady:
