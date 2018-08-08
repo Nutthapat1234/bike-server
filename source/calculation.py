@@ -9,6 +9,12 @@ class GameState():
     PLAY = 1
     END = 2
 
+class PlayerState():
+    STOP = -1
+    READY = 0
+    RIDE = 1
+    FINISH = 2
+
 
 class GameCalculationThread(threading.Thread):
     
@@ -16,11 +22,13 @@ class GameCalculationThread(threading.Thread):
     ## STATIC ##
     ############
     GAMESTATE = GameState()
+    PLAYERSTATE = PlayerState()
     
-    def __init__(self, gameData, playerList = {}):
+    def __init__(self, playerList = {}):
         super().__init__(name="GameCalculationThread")
         self.playerList = playerList
         self.previousTimeStamp = None
+        self.previousFreq = 0 #use for velocity calculation
 
     ##############
     ## OVERRIDE ##
@@ -47,11 +55,17 @@ class GameCalculationThread(threading.Thread):
         return currentTime() - self.previousTimeStamp
     
     def __updateGame(self, deltaTime):
-        if((len(self.playerList)>= 1)and(self.gameState is not self.GAMESTATE.END)):
-            self.__setplayerVelocityDict()
-            self.__setplayerPositionDict()
-            self.__setGameStateByplay()
-            #print(self.gameState)
+        #if((len(self.playerList)>= 1)and(self.gameState is not self.GAMESTATE.END)):
+            #self.__setplayerVelocityDict()
+            #self.__setplayerPositionDict()
+            #self.__setGameStateByplay()
+
+        for player in self.playerList:
+            self.__velocityCalculation(player.getGameData())
+            self.__positionCalculation(player.getGameData())
+            self.__changePlayerState(player.getGameData())
+            
+            
 
     def __updateTimeStamp(self):
         self.previousTimeStamp = currentTime()
@@ -87,13 +101,41 @@ class GameCalculationThread(threading.Thread):
     ##################
     ## PUBIC GETTER ##
     ##################
-    def getDeltaTime(self):
-        return self.deltaTime
-    
     def getPlayerPositionDict(self):
         return self.playerPositionDict
     
     def getGameState(self):
         return self.gameState
-
    
+    #####################
+    ## PRIVATE HELPPER ##
+    #####################
+    def __positionCalculation(self,player):
+        positionchange = player.getVelocity() * self.deltaTime
+        if positionchange > config.POSITION_LIMIT:
+            pos = player.getPosition()+config.POSITION_LIMIT
+            player.setPosition(pos)
+        else:
+            pos = player.getPosition()+ positionchange
+            player.setPosition(pos)
+
+    def __changePlayerState(self,player):
+        if (player.getVelocity() < 0):
+            player.setPlayerStateByPlay(self.PLAYERSTATE.STOP)
+        elif(player.getVelocity() == 0):
+            player.setPlayerStateByPlay(self.PLAYERSTATE.READY)
+        elif(player.getVelocity() > 0):
+            player.setPlayerStateByPlay(self.PLAYERSTATE.RIDE)
+        elif(player.getPosition() > 1):
+            player.setPlayerStateByPlay(self.PLAYERSTATE.FINISH)
+
+    
+    def __velocityCalculation(self,player):
+        currentFreq = player.getFrequency()
+        if(currentFreq != 0):
+            averageFreq = (currentFreq + self.previousFreq)/2
+            self.previousFreq =  currentFreq
+            velocity = (config.ENDING_POSITION /(config.AVERAGE_TIME*averageFreq))*currentFreq
+            player.setVelocity(velocity)
+        
+        1

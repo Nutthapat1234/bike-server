@@ -11,7 +11,6 @@ class Server:
     def __init__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connectionList = []
-        self.gameData = GameData()
 
     def startConnection(self, ipAddr):
         self.socket.bind((ipAddr, config.PORT))
@@ -21,14 +20,14 @@ class Server:
         self.mainLoop()
 
     def mainLoop(self):
-        calculationThread = GameCalculationThread(self.gameData)
+        calculationThread = GameCalculationThread()
         calculationThread.start()
         
         while True:
             conn, addr = self.socket.accept()
             
             print("Client connected from ip : " + str(addr))
-            newCommuThread = CommunicationThread(conn, addr, GameData(calculationThread))
+            newCommuThread = CommunicationThread(conn, addr, GameData())
             newCommuThread.start()
             self.connectionList.append(newCommuThread)
             if(len(self.connectionList)== 1):#Config.CLIENT_LIMIT

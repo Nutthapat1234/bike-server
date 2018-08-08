@@ -53,6 +53,10 @@ class CommunicationThread(threading.Thread):
         playerState = self.__executeCommand(command)
         return playerState
 
+    ## move later if possible
+    def getGameData(self):
+        return self.gameData
+    
     #####################
     ## PRIVATE HELPERS ##
     #####################
