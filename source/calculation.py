@@ -8,9 +8,9 @@ from data import GameData, PLAYERSTATE, GAMESTATE
 
 class GameCalculationThread(threading.Thread):
     
-    def __init__(self):
+    def __init__(self, gameData):
         super().__init__(name="GameCalculationThread")
-        self.gameData = GameData()
+        self.gameData = gameData
 
     ##############
     ## OVERRIDE ##

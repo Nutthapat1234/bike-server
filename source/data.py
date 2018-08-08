@@ -1,5 +1,6 @@
 import config
 
+# todo: create getter setter for GameData.
 
 class PLAYERSTATE:
     READY = 0
@@ -13,6 +14,7 @@ class GAMESTATE:
     FIRST_FINISHED = 2
     ALL_FINISHED = 3
 
+
 class GameData:
     
     def __init__(self):
@@ -21,8 +23,6 @@ class GameData:
     def reset(self):
         self.gameState = GAMESTATE.READY
         self.players = [ PlayerData() for i in range(PLAYER_LIMIT) ]
-
-    
 
         
 class PlayerData:
