@@ -54,12 +54,13 @@ class Player:
 #s.connect(("192.168.1.8",1995))
         
 p =  Player()
-p.connectToSever("192.168.0.101",1995)
+hostname = socket.gethostbyname(socket.gethostname())
+p.connectToSever(hostname,1995)
 while True:
     b = randint(1,50)
     p.setFrequency(b)
     p.getVelocity()
-    a = float(p.getPosition())
-    print(a)
-    print(p.getPlayerState())
+    #a = float(p.getPosition())
+    print(p.getPosition())
+    
     

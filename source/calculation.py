@@ -29,6 +29,8 @@ class GameCalculationThread(threading.Thread):
         self.playerList = playerList
         self.previousTimeStamp = None
         self.previousFreq = 0 #use for velocity calculation
+        self.allPlayerFinish = 0
+        self.gameState = 0
 
     ##############
     ## OVERRIDE ##
@@ -128,7 +130,6 @@ class GameCalculationThread(threading.Thread):
             player.setPlayerStateByPlay(self.PLAYERSTATE.RIDE)
         elif(player.getPosition() > 1):
             player.setPlayerStateByPlay(self.PLAYERSTATE.FINISH)
-
     
     def __velocityCalculation(self,player):
         currentFreq = player.getFrequency()
@@ -137,5 +138,17 @@ class GameCalculationThread(threading.Thread):
             self.previousFreq =  currentFreq
             velocity = (config.ENDING_POSITION /(config.AVERAGE_TIME*averageFreq))*currentFreq
             player.setVelocity(velocity)
+
+    def __checkGameState(self,player):
+        if(player.getPlayerState() == self.PLAYERSTATE.FINISH):
+            self.allPlayerFinish += 1
+
+    def __changeGameState(self):
+        if(self.allPlayerFinish == 1): #change to config.PLAYER_LIMIT
+            self.gameState = self.GAMESTATE.END
+        else:
+            self.gameState = self.GAMESTATE.PLAY
+        
+        
         
         1
