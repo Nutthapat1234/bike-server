@@ -150,5 +150,3 @@ class GameCalculationThread(threading.Thread):
             self.gameState = self.GAMESTATE.PLAY
         
         
-        
-        1

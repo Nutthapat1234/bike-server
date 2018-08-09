@@ -1,15 +1,19 @@
 import socket
 import threading
 
+from debugging import print
 
 class CommunicationThread(threading.Thread):
 
-    def __init__(self, connection, addr, gameData):
+    def __init__(self, connection, addr, shareGameData, id):
         super().__init__(name="CommunicationThread to " + str(addr))
+
+        # todo : check id limit and print error
         
         self.connection = connection
         self.address = addr
-        self.gameData = gameData
+        self.shareGameData = shareGameData
+        self.id = id
 
     ##############
     ## OVERRIDE ##
@@ -38,24 +42,8 @@ class CommunicationThread(threading.Thread):
     def getAddress(self):
         return self.address
 
-    def getVelocity(self):
-        command = '"getVelocity",'
-        velocity = self.__executeCommand(command)
-        return velocity
-
-    def getPosition(self):
-        command = '"getPosition",'
-        position = self.__executeCommand(command)
-        return position
-
-    def getPlayerState(self):
-        command = '"getPlayerState",'
-        playerState = self.__executeCommand(command)
-        return playerState
-
-    ## move later if possible
-    def getGameData(self):
-        return self.gameData
+    def getPlayerData(self):
+        return self.shareGameData.players[self.id]
     
     #####################
     ## PRIVATE HELPERS ##
@@ -89,7 +77,13 @@ class CommunicationThread(threading.Thread):
         return tupleData[1:]
 
     def __getCorrespondingMethod(self, header):
-        return getattr(self.gameData, header)
+        #admin actions
+        if header == 'resetGame':
+            return self.shareGameData.resetGame
+        
+        #client actions
+        playerData = self.shareGameData.players[self.id]
+        return getattr(playerData, header)
 
     def __performAction(self, actionMethod, values):
         return actionMethod(*values)

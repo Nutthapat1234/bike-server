@@ -60,7 +60,6 @@ while True:
     b = randint(1,50)
     p.setFrequency(b)
     p.getVelocity()
-    #a = float(p.getPosition())
     print(p.getPosition())
     
     

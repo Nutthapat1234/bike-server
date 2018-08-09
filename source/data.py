@@ -1,8 +1,32 @@
-import config
+from config import PLAYER_LIMIT
+
+# todo: create getter setter for GameData.
+
+class PLAYERSTATE:
+    READY = 0
+    RIDING = 1
+    FINISHED = 2
 
 
-class GameData():
+class GAMESTATE:
+    READY = 0
+    PLAYING_NO_WINNER = 1
+    FIRST_FINISHED = 2
+    ALL_FINISHED = 3
 
+
+class GameData:
+    
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.gameState = GAMESTATE.READY
+        self.players = [ PlayerData() for i in range(PLAYER_LIMIT) ]
+
+        
+class PlayerData:
+    
     def __init__(self):
         self.position =  0
         self.zVelocity = 0
@@ -18,7 +42,7 @@ class GameData():
     def setVelocity(self,velocity):
         self.zVelocity = velocity
         
-    def setPlayerStateByPlay(self,state):
+    def setPlayerState(self, state):
         self.playerState =  state
             
     def setPosition(self,pos):
