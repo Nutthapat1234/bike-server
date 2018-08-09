@@ -5,8 +5,6 @@ from debugging import print
 from config import FREQ_TO_VELOCITY, PLAYER_LIMIT
 from data import GameData, PLAYERSTATE, GAMESTATE
 
-#todo : game state change READY->PLAY by time trigger. not by player position
-
 class GameCalculationThread(threading.Thread):
     
     def __init__(self, gameData):
@@ -22,6 +20,10 @@ class GameCalculationThread(threading.Thread):
         
         while True:
             self.deltaTime = self.__calculateDeltaTime()
+
+            if self.gameData.gameState is GAMESTATE.READY:
+                continue
+            
             self.__updateGame(self.deltaTime)
             self.__updateTimeStamp()
 
@@ -47,7 +49,10 @@ class GameCalculationThread(threading.Thread):
     ###################
     def resetGame(self):
         self.gameData.reset()
-        self.previousTimeStamp = currentTime()
+
+    def startGame(self):
+        if self.gameData.gameState is GAMESTATE.READY:
+            self.gameData.start()
 
     ##################
     ## PUBIC GETTER ##
@@ -57,14 +62,11 @@ class GameCalculationThread(threading.Thread):
     
     def getGameState(self):
         return self.gameData.gameState
-   
-    #####################
-    ## PRIVATE HELPPER ##
-    #####################
-    # -- nothing now -- #
-    #####################
-        
 
+   
+###########################
+## PRIVATE HELPING CLASS ##
+###########################
 class GameCalculator:
     @staticmethod
     def updatePlayerPosition(player, deltaTime):
@@ -107,9 +109,8 @@ class GameCalculator:
             if state is PLAYERSTATE.FINISHED:
                 someFinished = True
 
-        if allReady:
-            updatedState = GAMESTATE.READY
-        elif allFinished:
+        # assuming this method won't be called while gameState is READY
+        if allFinished:
             updatedState = GAMESTATE.ALL_FINISHED
         elif someFinished:
             updatedState = GAMESTATE.FIRST_FINISHED

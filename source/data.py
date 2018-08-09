@@ -24,6 +24,10 @@ class GameData:
         self.gameState = GAMESTATE.READY
         self.players = [ PlayerData() for i in range(PLAYER_LIMIT) ]
 
+    def start( self ):
+        if self.gameState is GAMESTATE.READY:
+            self.gameState = GAMESTATE.PLAYING_NO_WINNER
+
         
 class PlayerData:
     
