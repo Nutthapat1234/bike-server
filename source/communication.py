@@ -29,9 +29,9 @@ class CommunicationThread(threading.Thread):
 
     def respondClient(self,data):
         result = self.__executeCommand(data)
-        print('get result:', result)
-        self.connection.send(str.encode(str(result)))
-        return result
+
+        if result is not None:
+            self.connection.send(str.encode(str(result)))
 
     ############
     ## PUBLIC ##

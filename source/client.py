@@ -46,8 +46,6 @@ class Player:
         command = '"setFrequency",' + str(frequency)
         command = command.encode("utf-8")
         self.connection.send(command)
-        result = self.connection.recv(1024)
-        result = result.decode("utf-8")
         
         
 #s = socket.socket()
@@ -56,6 +54,7 @@ class Player:
 p =  Player()
 hostName = socket.gethostbyname('localhost')
 p.connectToSever(hostName,1995)
+
 while True:
 ##    b = randint(1,50)
     b = 10

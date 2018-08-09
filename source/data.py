@@ -21,10 +21,12 @@ class GameData:
         self.reset()
 
     def reset(self):
+        print('game is reset')
         self.gameState = GAMESTATE.READY
         self.players = [ PlayerData() for i in range(PLAYER_LIMIT) ]
 
     def start( self ):
+        print('game is started')
         if self.gameState is GAMESTATE.READY:
             self.gameState = GAMESTATE.PLAYING_NO_WINNER
 
