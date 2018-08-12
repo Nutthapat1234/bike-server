@@ -27,7 +27,7 @@ class Server:
     def __mainLoop(self):
         while True:
             try:
-                if(len(self.connectionList)< 1):
+                if(len(self.connectionList)< 1): #change to client limit
                     conn, addr = self.socket.accept()            
                     print("new client connected from : " + str(addr))
 
@@ -44,8 +44,9 @@ class Server:
                         break
                     exc = client.getException()
                     if exc is not None:
-                        disconnectId = int(client.exit())
-                        raise exc
+                        disconnectId = client.getId()
+                        client.exit()
+                        raise ConnectionResetError
 
                 # todo : check connection limit properly
                 if len(self.connectionList) >= CLIENT_LIMIT: 

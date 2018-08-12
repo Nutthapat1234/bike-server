@@ -15,8 +15,9 @@ class CommunicationThread(threading.Thread):
         self.address = addr
         self.shareGameData = shareGameData
         self.id = id
-        self.exception = None
-
+        self.__isRunning = True
+        self.exception =  None
+        
     ##############
     ## OVERRIDE ##
     ##############
@@ -25,7 +26,7 @@ class CommunicationThread(threading.Thread):
         print('start handling gameClientConnection', self.address)
 
         try:
-            while True:
+            while self.__isRunning:
                 if(len(buffer) == 0):
                     data = self.connection.recv(1024)
                     data = data.decode('utf-8')
@@ -38,10 +39,12 @@ class CommunicationThread(threading.Thread):
                 threading.Thread(target=self.respondClient,args=[command]).start()                       
 
         except socket.error as msg:
-            self.connection.close()
-            self.excption =  ConnectionResetError()
-                
-                
+            while self.__isRunning:
+                print(111111)
+                self.connection.close()
+                self.exception = ConnectionResetError()
+            
+                          
     def respondClient(self,data):
         try:
             result = self.__executeCommand(data)
@@ -49,10 +52,8 @@ class CommunicationThread(threading.Thread):
             if result is not None:
                 self.connection.send(str.encode(str(result)))
         except socket.error :
-            self.exception = ConnectionResetError()
-
-    def exit(self):
-        return self.id
+                self.exception = ConnectionResetError()
+                return
 
     ############
     ## PUBLIC ##
@@ -68,6 +69,12 @@ class CommunicationThread(threading.Thread):
     
     def getException(self):
         return self.exception
+
+    def getId(self):
+        return self.id
+    
+    def exit(self):
+        self.__isRunning = False
     
     #####################
     ## PRIVATE HELPERS ##
