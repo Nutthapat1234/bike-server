@@ -2,6 +2,7 @@ import socket
 import threading
 
 from debugging import print
+from config import PORT
 
 class CommunicationThread(threading.Thread):
 
@@ -14,24 +15,44 @@ class CommunicationThread(threading.Thread):
         self.address = addr
         self.shareGameData = shareGameData
         self.id = id
+        self.exception = None
 
     ##############
     ## OVERRIDE ##
     ##############
     def run(self):
+        buffer = []
         print('start handling gameClientConnection', self.address)
-        
-        while True:
-            data = self.connection.recv(1024)
-            data = data.decode('utf-8')
-            print('received data from', self.address, ':', data)
-            threading.Thread(target=self.respondClient,args=[data]).start()                       
 
+        try:
+            while True:
+                if(len(buffer) == 0):
+                    data = self.connection.recv(1024)
+                    data = data.decode('utf-8')
+                    data = data.split('\n')
+                    data = data[:-1]
+                    buffer += data
+                command = buffer[0]
+                buffer = buffer[1:]
+                print('received data from', self.address, ':', command)
+                threading.Thread(target=self.respondClient,args=[command]).start()                       
+
+        except socket.error as msg:
+            self.connection.close()
+            self.excption =  ConnectionResetError()
+                
+                
     def respondClient(self,data):
-        result = self.__executeCommand(data)
+        try:
+            result = self.__executeCommand(data)
+        
+            if result is not None:
+                self.connection.send(str.encode(str(result)))
+        except socket.error :
+            self.exception = ConnectionResetError()
 
-        if result is not None:
-            self.connection.send(str.encode(str(result)))
+    def exit(self):
+        return self.id
 
     ############
     ## PUBLIC ##
@@ -44,6 +65,9 @@ class CommunicationThread(threading.Thread):
 
     def getPlayerData(self):
         return self.shareGameData.players[self.id]
+    
+    def getException(self):
+        return self.exception
     
     #####################
     ## PRIVATE HELPERS ##

@@ -14,8 +14,16 @@ class Player:
     ###################
     ## PUBLIC GETTER ##
     ###################
+    def getFrequency(self):
+        command = '"getFrequency",'+'\n'
+        command = command.encode("utf-8")
+        self.connection.send(command)
+        result = self.connection.recv(1024)
+        result = result.decode("utf-8")
+        return result
+    
     def getVelocity(self):
-        command = '"getVelocity",'
+        command = '"getVelocity",'+'\n'
         command = command.encode("utf-8")
         self.connection.send(command)
         result = self.connection.recv(1024)
@@ -23,7 +31,7 @@ class Player:
         return result
 
     def getPosition(self):
-        command = '"getPosition",'
+        command = '"getPosition",'+'\n'
         command = command.encode("utf-8")
         self.connection.send(command)
         result = self.connection.recv(1024)
@@ -32,7 +40,7 @@ class Player:
         return result
 
     def getPlayerState(self):
-        command = '"getPlayerState",'
+        command = '"getPlayerState",'+'\n'
         command = command.encode("utf-8")
         self.connection.send(command)
         result = self.connection.recv(1024)
@@ -43,7 +51,7 @@ class Player:
     ## PUBLIC SETTER ##
     ###################
     def setFrequency(self,frequency):
-        command = '"setFrequency",' + str(frequency)
+        command = '"setFrequency",' + str(frequency)+"\n"
         command = command.encode("utf-8")
         self.connection.send(command)
         
@@ -59,8 +67,9 @@ while True:
 ##    b = randint(1,50)
     b = 10
     p.setFrequency(b)
+    p.getFrequency()
     p.getVelocity()
     a = float(p.getPosition())
     print(a)
-    print(p.getPlayerState())
+    #print(p.getPlayerState())
     
