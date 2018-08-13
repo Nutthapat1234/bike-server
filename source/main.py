@@ -26,44 +26,37 @@ class Server:
 
     def __mainLoop(self):
         while True:
-            try:
-                if(len(self.connectionList)< 1): #change to client limit
-                    conn, addr = self.socket.accept()            
-                    print("new client connected from : " + str(addr))
-
-                    newId = len(self.connectionList)
-                    print('client id :', newId)
-                    newCommuThread = CommunicationThread(conn, addr,self.gameData, newId)
-                    newCommuThread.start()
-            
-                    self.connectionList.append(newCommuThread)
-
-                # to check exception form client
-                for client in self.connectionList:
-                    if len(self.connectionList) == 0:
-                        break
-                    exc = client.getException()
-                    if exc is not None:
-                        disconnectId = client.getId()
-                        client.exit()
-                        raise ConnectionResetError
-
-                # todo : check connection limit properly
-                if len(self.connectionList) >= CLIENT_LIMIT: 
-                    print("reject connection from : " + str(addr))
-                    conn.close()
-                    continue
-
-            except ConnectionResetError as msg:
-                print("Wait for connection...")
+            if(len(self.connectionList)< 1): #change to client limit
                 conn, addr = self.socket.accept()            
-                print("reconnect client connected from : " + str(addr))
-
-                newCommuThread = CommunicationThread(conn, addr, self.gameData, disconnectId)
+                print("new client connected from : " + str(addr))
+                
+                newCommuThread = CommunicationThread(conn, addr,self.gameData)
                 newCommuThread.start()
 
-                self.connectionList[disconnectId] = newCommuThread
+                self.connectionList.append(newCommuThread)
 
+            # to check exception form client
+            for client in self.connectionList[:]:
+                if len(self.connectionList) == 0:
+                    break
+                exc = client.getException()
+                if exc is not None:
+                    client.exit()
+                    self.connectionList.remove(client)
+                    print("Wait for connection...")
+                    conn, addr = self.socket.accept()            
+                    print("reconnect client connected from : " + str(addr))
+
+                    newCommuThread = CommunicationThread(conn, addr, self.gameData)
+                    newCommuThread.start()
+
+                    self.connectionList.append(newCommuThread)
+
+            # todo : check connection limit properly
+            if len(self.connectionList) >= CLIENT_LIMIT:
+                print("reject connection from : " + str(addr))
+                conn.close()
+                continue
             
             
 if __name__ == '__main__':

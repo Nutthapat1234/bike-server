@@ -14,24 +14,24 @@ class Player:
     ###################
     ## PUBLIC GETTER ##
     ###################
-    def getFrequency(self):
-        command = '"getFrequency",'+'\n'
+    def getFrequency(self,tagname):
+        command = str(tagname)+',"getFrequency",'+'\n'
         command = command.encode("utf-8")
         self.connection.send(command)
         result = self.connection.recv(1024)
         result = result.decode("utf-8")
         return result
     
-    def getVelocity(self):
-        command = '"getVelocity",'+'\n'
+    def getVelocity(self,tagname):
+        command = str(tagname)+',"getVelocity",'+'\n'
         command = command.encode("utf-8")
         self.connection.send(command)
         result = self.connection.recv(1024)
         result = result.decode("utf-8")
         return result
 
-    def getPosition(self):
-        command = '"getPosition",'+'\n'
+    def getPosition(self,tagname):
+        command = str(tagname)+',"getPosition",'+'\n'
         command = command.encode("utf-8")
         self.connection.send(command)
         result = self.connection.recv(1024)
@@ -39,8 +39,8 @@ class Player:
         
         return result
 
-    def getPlayerState(self):
-        command = '"getPlayerState",'+'\n'
+    def getPlayerState(self,tagnmae):
+        command = str(tagname)+'"getPlayerState",'+'\n'
         command = command.encode("utf-8")
         self.connection.send(command)
         result = self.connection.recv(1024)
@@ -50,8 +50,13 @@ class Player:
     ###################
     ## PUBLIC SETTER ##
     ###################
-    def setFrequency(self,frequency):
-        command = '"setFrequency",' + str(frequency)+"\n"
+    def setFrequency(self,frequency,tagname):
+        command = str(tagname)+',"setFrequency",' + str(frequency)+"\n"
+        command = command.encode("utf-8")
+        self.connection.send(command)
+
+    def setClientTag(self,tagname):
+        command = str(tagname)+',"setClientTag",'+str(tagname)+"\n"
         command = command.encode("utf-8")
         self.connection.send(command)
         
@@ -63,13 +68,16 @@ p =  Player()
 hostName = socket.gethostbyname('localhost')
 p.connectToSever(hostName,1995)
 
+tag = "\'Player1\'"
+p.setClientTag(tag)
+
 while True:
 ##    b = randint(1,50)
     b = 10
-    p.setFrequency(b)
-    p.getFrequency()
-    p.getVelocity()
-    a = float(p.getPosition())
+    p.setFrequency(b,tag)
+    p.getFrequency(tag)
+    p.getVelocity(tag)
+    a = float(p.getPosition(tag))
     print(a)
     #print(p.getPlayerState())
     
