@@ -23,24 +23,14 @@ class GameData:
     def reset(self):
         print('game is reset')
         self.gameState = GAMESTATE.READY
-        self.playerDataList = [ PlayerData() for i in range(PLAYER_LIMIT) ]
-        self.players = {}
-        self.slot = 0
+        self.players = [ PlayerData() for i in range(PLAYER_LIMIT) ]
 
     def start( self ):
         print('game is started')
         if self.gameState is GAMESTATE.READY:
             self.gameState = GAMESTATE.PLAYING_NO_WINNER
 
-    def setClientTag(self, tagName):
-        if tagName not in self.players:
-            self.players[tagname] = self.playerDataList[slot]
-            self.slot += 1
-        else:
-            pass
-        print(self.players)
- 
-    
+        
 class PlayerData:
     
     def __init__(self):
