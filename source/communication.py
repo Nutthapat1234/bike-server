@@ -6,7 +6,7 @@ from config import PORT
 
 class CommunicationThread(threading.Thread):
 
-    def __init__(self, connection, addr, shareGameData, id):
+    def __init__(self, connection, addr, shareGameData):
         super().__init__(name="CommunicationThread to " + str(addr))
 
         # todo : check id limit and print error
@@ -14,7 +14,6 @@ class CommunicationThread(threading.Thread):
         self.connection = connection
         self.address = addr
         self.shareGameData = shareGameData
-        self.id = id
         self.__isRunning = True
         self.exception =  None
         
@@ -37,10 +36,9 @@ class CommunicationThread(threading.Thread):
                 buffer = buffer[1:]
                 print('received data from', self.address, ':', command)
                 threading.Thread(target=self.respondClient,args=[command]).start()                       
-
+    
         except socket.error as msg:
-            while self.__isRunning:
-                print(111111)
+            while self.__isRunning:  
                 self.connection.close()
                 self.exception = ConnectionResetError()
             
@@ -69,9 +67,6 @@ class CommunicationThread(threading.Thread):
     
     def getException(self):
         return self.exception
-
-    def getId(self):
-        return self.id
     
     def exit(self):
         self.__isRunning = False
@@ -80,12 +75,14 @@ class CommunicationThread(threading.Thread):
     ## PRIVATE HELPERS ##
     #####################
     def __executeCommand(self, strDataIn):
+        print(strDataIn)
         try: #to call method according to header
             dataIn =    self.__convertToTuple(strDataIn) #convert to tuple
             header =    self.__extractHeader(dataIn)
+            tag    =    self.__extractTag(dataIn)
             values =    self.__extractParameters(dataIn)
 
-            actionMethod = self.__getCorrespondingMethod(header)
+            actionMethod = self.__getCorrespondingMethod(header, tag)
             output = self.__performAction(actionMethod, values)
             
             return output
@@ -101,22 +98,28 @@ class CommunicationThread(threading.Thread):
         manipulatedString = '('+strData+')'
         return eval(manipulatedString)
     
-    def __extractHeader(self, tupleData):
+    def __extractTag(self, tupleData):
         return tupleData[0]
     
+    def __extractHeader(self, tupleData):
+        return tupleData[1]
+    
     def __extractParameters(self, tupleData):
-        return tupleData[1:]
+        return tupleData[2:]
 
-    def __getCorrespondingMethod(self, header):
+    def __getCorrespondingMethod(self, header, tag):
         #admin actions
         if header == 'reset':
             return self.shareGameData.reset
 
         if header == 'start':
             return self.shareGameData.start
+
+        if header == 'setPlayerTag':
+            return self.shareGameData.setPlayerTag
         
         #client actions
-        playerData = self.shareGameData.players[self.id]
+        playerData = self.shareGameData.players[tag]
         return getattr(playerData, header)
 
     def __performAction(self, actionMethod, values):

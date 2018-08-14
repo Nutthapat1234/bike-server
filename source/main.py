@@ -14,7 +14,7 @@ class Server:
         self.connectionList = []
         self.gameData = GameData()
         self.calculationThread = GameCalculationThread( self.gameData )
-        self.calculationThread.start()
+        self.calculationThread.start() 
         self.calculationThread.startGame()
 
     def startConnection(self, ipAddr):
@@ -31,9 +31,8 @@ class Server:
                     conn, addr = self.socket.accept()            
                     print("new client connected from : " + str(addr))
 
-                    newId = len(self.connectionList)
-                    print('client id :', newId)
-                    newCommuThread = CommunicationThread(conn, addr,self.gameData, newId)
+                    
+                    newCommuThread = CommunicationThread(conn, addr,self.gameData)
                     newCommuThread.start()
             
                     self.connectionList.append(newCommuThread)
@@ -44,9 +43,17 @@ class Server:
                         break
                     exc = client.getException()
                     if exc is not None:
-                        disconnectId = client.getId()
                         client.exit()
-                        raise ConnectionResetError
+                        self.connectionList.remove(client)
+                        print("Wait for connection...")
+                        conn, addr = self.socket.accept()            
+                        print("reconnect client connected from : " + str(addr))
+
+                        newCommuThread = CommunicationThread(conn, addr, self.gameData)
+                        newCommuThread.start()
+
+                        self.connectionList.append(newCommuThread)                        
+                        
 
                 # todo : check connection limit properly
                 if len(self.connectionList) >= CLIENT_LIMIT: 
@@ -59,10 +66,8 @@ class Server:
                 conn, addr = self.socket.accept()            
                 print("reconnect client connected from : " + str(addr))
 
-                newCommuThread = CommunicationThread(conn, addr, self.gameData, disconnectId)
+                newCommuThread = CommunicationThread(conn, addr, self.gameData)
                 newCommuThread.start()
-
-                self.connectionList[disconnectId] = newCommuThread
 
             
             

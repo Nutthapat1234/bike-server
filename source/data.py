@@ -18,17 +18,29 @@ class GAMESTATE:
 class GameData:
     
     def __init__(self):
-        self.reset()
+         self.players = {}
+         self.index = 0
+         self.reset()
 
     def reset(self):
         print('game is reset')
         self.gameState = GAMESTATE.READY
-        self.players = [ PlayerData() for i in range(PLAYER_LIMIT) ]
+        self.playerDataList = [ PlayerData() for i in range(PLAYER_LIMIT) ]
+        if len(self.players) != 0:
+            index = 0
+            for player in players:
+                self.players[player] = self.playerDataList[index]
+                index += 1
+        
 
     def start( self ):
         print('game is started')
         if self.gameState is GAMESTATE.READY:
             self.gameState = GAMESTATE.PLAYING_NO_WINNER
+
+    def setPlayerTag(self,tag):
+        self.players[tag] = self.playerDataList[self.index]
+        self.index += 1
 
         
 class PlayerData:

@@ -11,11 +11,19 @@ class Player:
     def connectToSever(self,ipAdress,port):
         self.connection.connect((ipAdress,port))
 
+    def ClientTag(self,tag):
+        self.tag = tag
+
     ###################
     ## PUBLIC GETTER ##
     ###################
+    def setPlayerTag(self):
+        command = self.tag + ',"setPlayerTag",'+self.tag+'\n'
+        command = command.encode("utf-8")
+        self.connection.send(command)
+        
     def getFrequency(self):
-        command = '"getFrequency",'+'\n'
+        command = self.tag + ',"getFrequency",'+'\n'
         command = command.encode("utf-8")
         self.connection.send(command)
         result = self.connection.recv(1024)
@@ -23,7 +31,7 @@ class Player:
         return result
     
     def getVelocity(self):
-        command = '"getVelocity",'+'\n'
+        command = self.tag + ',"getVelocity",'+'\n'
         command = command.encode("utf-8")
         self.connection.send(command)
         result = self.connection.recv(1024)
@@ -31,7 +39,7 @@ class Player:
         return result
 
     def getPosition(self):
-        command = '"getPosition",'+'\n'
+        command = self.tag + ',"getPosition",'+'\n'
         command = command.encode("utf-8")
         self.connection.send(command)
         result = self.connection.recv(1024)
@@ -40,7 +48,7 @@ class Player:
         return result
 
     def getPlayerState(self):
-        command = '"getPlayerState",'+'\n'
+        command = self.tag + ',"getPlayerState",'+'\n'
         command = command.encode("utf-8")
         self.connection.send(command)
         result = self.connection.recv(1024)
@@ -51,7 +59,7 @@ class Player:
     ## PUBLIC SETTER ##
     ###################
     def setFrequency(self,frequency):
-        command = '"setFrequency",' + str(frequency)+"\n"
+        command = self.tag + ',"setFrequency",' + str(frequency)+"\n"
         command = command.encode("utf-8")
         self.connection.send(command)
         
@@ -62,6 +70,8 @@ class Player:
 p =  Player()
 hostName = socket.gethostbyname('localhost')
 p.connectToSever(hostName,1995)
+p.ClientTag('"Player1"')
+p.setPlayerTag()
 
 while True:
 ##    b = randint(1,50)

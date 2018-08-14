@@ -35,7 +35,7 @@ class GameCalculationThread(threading.Thread):
         return currentTime() - self.previousTimeStamp
     
     def __updateGame(self, deltaTime):
-        for player in self.gameData.players:
+        for tag,player in self.gameData.players.items():
             GameCalculator.updatePlayerPosition( player, deltaTime )
             GameCalculator.updatePlayerState( player )
 
@@ -100,7 +100,7 @@ class GameCalculator:
         allFinished = True
         someFinished = False
         
-        for player in gameData.players:
+        for tag,player in gameData.players.items():
             state = player.getPlayerState()
             if state is not PLAYERSTATE.READY:
                 allReady = False
