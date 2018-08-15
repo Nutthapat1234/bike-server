@@ -1,5 +1,6 @@
 import socket
 import threading
+from time import sleep as delay
 
 from debugging import print
 from data import GameData
@@ -24,52 +25,39 @@ class Server:
         print("binded at : " + str(ipAddr) + " : " + str(PORT))
         self.__mainLoop()
 
+    def __clearDeadClient(self):        
+        if len(self.connectionList) == 0:
+            return
+        
+        for client in self.connectionList:
+            exc = client.getException()
+            
+            if exc is not None:
+                client.exit()
+                self.connectionList.remove(client)
+
+    def __waitAndAcceptNewClient(self):
+        conn, addr = self.socket.accept()            
+        print("new client connected from : " + str(addr))
+        
+        newCommuThread = CommunicationThread(conn, addr,self.gameData)
+        newCommuThread.start()
+
+        self.connectionList.append(newCommuThread)
+
     def __mainLoop(self):
         while True:
             try:
-                if(len(self.connectionList)< 1): #change to client limit
-                    conn, addr = self.socket.accept()            
-                    print("new client connected from : " + str(addr))
+                self.__clearDeadClient()
+                connectedNum = len(self.connectionList)
+                
+                if connectedNum < CLIENT_LIMIT:
+                    self.__waitAndAcceptNewClient()
 
-                    
-                    newCommuThread = CommunicationThread(conn, addr,self.gameData)
-                    newCommuThread.start()
-            
-                    self.connectionList.append(newCommuThread)
-
-                # to check exception form client
-                for client in self.connectionList:
-                    if len(self.connectionList) == 0:
-                        break
-                    exc = client.getException()
-                    if exc is not None:
-                        client.exit()
-                        self.connectionList.remove(client)
-                        print("Wait for connection...")
-                        conn, addr = self.socket.accept()            
-                        print("reconnect client connected from : " + str(addr))
-
-                        newCommuThread = CommunicationThread(conn, addr, self.gameData)
-                        newCommuThread.start()
-
-                        self.connectionList.append(newCommuThread)                        
-                        
-
-                # todo : check connection limit properly
-                if len(self.connectionList) >= CLIENT_LIMIT: 
-                    print("reject connection from : " + str(addr))
-                    conn.close()
-                    continue
-
+                delay(1)
+                
             except ConnectionResetError as msg:
-                print("Wait for connection...")
-                conn, addr = self.socket.accept()            
-                print("reconnect client connected from : " + str(addr))
-
-                newCommuThread = CommunicationThread(conn, addr, self.gameData)
-                newCommuThread.start()
-
-            
+                print('connection reset error', msg)
             
 if __name__ == '__main__':
 ##    hostName = socket.gethostbyname(socket.gethostname())

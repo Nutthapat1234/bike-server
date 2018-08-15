@@ -18,41 +18,61 @@ class GAMESTATE:
 class GameData:
     
     def __init__(self):
-         self.players = {}
-         self.index = 0
          self.reset()
 
     def reset(self):
         print('game is reset')
         self.gameState = GAMESTATE.READY
         self.playerDataList = [ PlayerData() for i in range(PLAYER_LIMIT) ]
-        if len(self.players) != 0:
-            index = 0
-            for player in players:
-                self.players[player] = self.playerDataList[index]
-                index += 1
         
-
     def start( self ):
         print('game is started')
         if self.gameState is GAMESTATE.READY:
             self.gameState = GAMESTATE.PLAYING_NO_WINNER
 
-    def setPlayerTag(self,tag):
-        self.players[tag] = self.playerDataList[self.index]
-        self.index += 1
+    def playerOf(self, i):
+        return self.playerDataList[i]
 
-        
+    ####################
+    ## PUBLIC SETTERS ##
+    ####################
+    def setFrequency(self, freq, i):
+        self.playerOf(i).setFrequency(freq)
+
+    def setVelocity(self, velo, i):
+        self.playerOf(i).setVelocity(velo)
+
+    def setPlayerState(self, state, i):
+        self.playerOf(i).setPlayerState(state)
+
+    def setPosition(self, position, i):
+        self.playerOf(i).setPosition(position)
+
+    ####################
+    ## PUBLIC GETTERS ##
+    ####################
+    def getFrequency(self, i):
+        return self.playerOf(i).getFrequency()
+
+    def getPosition(self, i):
+        return self.playerOf(i).getPosition()
+
+    def getVelocity(self, i):
+        return self.playerOf(i).getVelocity()
+
+    def getPlayerState(self, i):
+        return self.playerOf(i).getPlayerState()
+    
 class PlayerData:
     
     def __init__(self):
         self.position =  0
         self.zVelocity = 0
         self.frequency = 0
-        self.playerState = 0 #Ready
+        self.playerState = PLAYERSTATE.READY
 
-    ####################
-    ## PUBLIC SETTERS ##
+    #################### - we may keep these methods 
+    ## PUBLIC SETTERS ## - so that it still looks clean in calculation part
     ####################
     def setFrequency(self,freq):
         self.frequency =  freq
