@@ -42,15 +42,18 @@ class CommunicationThread(threading.Thread):
             
                           
     def respondClient(self,data):
-        try:
-            result = self.__executeCommand(data)
-            
-            if result is not None:
-                self.connection.send(str.encode(str(result)))
-        except socket.error :
-                self.exception = ConnectionResetError()
-                return
+        result = self.__executeCommand(data)
+        
+        if result is not None:
+            self.send(str(result))
 
+    def send(self, s):
+        print('send result', s)
+        try:
+            self.connection.send(str.encode(s))
+        except socket.error :
+            self.exception = ConnectionResetError()
+        
     ############
     ## PUBLIC ##
     ############

@@ -2,7 +2,7 @@ import socket
 import threading
 from time import sleep as delay
 
-from debugging import print
+from debugging import print, forcePrint
 from data import GameData
 from communication import CommunicationThread
 from calculation import GameCalculationThread
@@ -11,10 +11,11 @@ from config import CLIENT_LIMIT, PLAYER_LIMIT, PORT
 class Server:
     def __init__(self):
         self.socket = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         
         self.connectionList = []
         self.gameData = GameData()
-        self.calculationThread = GameCalculationThread( self.gameData )
+        self.calculationThread = GameCalculationThread( self.gameData, self.connectionList )
         self.calculationThread.start() 
         self.calculationThread.startGame()
 
@@ -22,19 +23,26 @@ class Server:
         self.socket.bind((ipAddr, PORT))
         self.socket.listen(CLIENT_LIMIT)
         
-        print("binded at : " + str(ipAddr) + " : " + str(PORT))
+        forcePrint("binded at : " + str(ipAddr) + " : " + str(PORT))
         self.__mainLoop()
 
-    def __clearDeadClient(self):        
+    def __clearDeadClient(self):
+        print("clear client")
         if len(self.connectionList) == 0:
             return
+
+        toRemove = []
         
         for client in self.connectionList:
             exc = client.getException()
             
             if exc is not None:
-                client.exit()
                 self.connectionList.remove(client)
+                client.exit()
+                print("remove one")
+
+        for client in toRemove:
+            self.connectionList.remove(client)
 
     def __waitAndAcceptNewClient(self):
         conn, addr = self.socket.accept()            

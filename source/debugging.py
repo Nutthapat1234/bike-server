@@ -1,7 +1,7 @@
 from config import ENABLE_DEBUG
 
-ppppp = print
+forcePrint = print
 def print(*v):
-    global ppppp
+    global forcePrint
     if ENABLE_DEBUG:
-        ppppp(*v)
+        forcePrint(*v)

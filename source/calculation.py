@@ -7,9 +7,11 @@ from data import GameData, PLAYERSTATE, GAMESTATE
 
 class GameCalculationThread(threading.Thread):
     
-    def __init__(self, gameData):
+    def __init__(self, gameData, connectionList):
         super().__init__(name="GameCalculationThread")
         self.gameData = gameData
+        self.connectionList = connectionList
+        self.lastSent = currentTime()
 
     ##############
     ## OVERRIDE ##
@@ -26,11 +28,34 @@ class GameCalculationThread(threading.Thread):
             
             self.__updateGame(self.deltaTime)
             self.__updateTimeStamp()
+            if currentTime() - self.lastSent >= 0.05:
+                self.__broadcastGameData()
+                self.lastSent = currentTime()
 
 
     #####################
     ## PRIVATE HELPERS ##
     #####################
+    def __broadcastGameData(self):
+        gameString = ''
+        for playerData in self.gameData.playerDataList:
+            playerString = str(playerData.getPosition()) + ','
+            playerString += str(playerData.getVelocity())
+
+            if playerData == self.gameData.playerDataList[0]:
+                gameString += playerString
+            else:
+                gameString += '|' + playerString
+
+        gameString += '\n'
+        
+        for connection in self.connectionList:
+            if not connection.isClient:
+                continue
+            if connection.exception is not None:
+                continue            
+            connection.send(gameString)
+        
     def __calculateDeltaTime(self):
         return currentTime() - self.previousTimeStamp
     
