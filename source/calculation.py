@@ -2,7 +2,7 @@ import threading
 from time import time as currentTime
 
 from debugging import print
-from config import FREQ_TO_VELOCITY, PLAYER_LIMIT
+from config import FREQ_TO_VELOCITY, PLAYER_LIMIT, ENDING_POSITION
 from data import GameData, PLAYERSTATE, GAMESTATE
 
 class GameCalculationThread(threading.Thread):
@@ -113,7 +113,7 @@ class GameCalculator:
         
         if playerPosition <= 0:
             updatedState = PLAYERSTATE.READY
-        elif playerPosition >= 1:
+        elif playerPosition >= ENDING_POSITION:
             updatedState = PLAYERSTATE.FINISHED
         else: # in between (0, 1)
             updatedState = PLAYERSTATE.RIDING
