@@ -29,7 +29,7 @@ class GameCalculationThread(threading.Thread):
             self.__updateGame(self.deltaTime)
             self.__updateTimeStamp()
             if currentTime() - self.lastSent >= 0.05:
-                self.__broadcastGameData()
+                #self.__broadcastGameData()
                 self.lastSent = currentTime()
 
 
@@ -40,7 +40,8 @@ class GameCalculationThread(threading.Thread):
         gameString = ''
         for playerData in self.gameData.playerDataList:
             playerString = str(playerData.getPosition()) + ','
-            playerString += str(playerData.getVelocity())
+            playerString += str(playerData.getVelocity())+ ','
+            playerString += str(playerData .getHeadset())           
 
             if playerData == self.gameData.playerDataList[0]:
                 gameString += playerString

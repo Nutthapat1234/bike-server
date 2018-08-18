@@ -57,6 +57,16 @@ class Player:
         result = result.decode("utf-8")
         return result
 
+    def getHeadset(self):
+        command = '"getHeadset",'+str(self.id)+'\n'
+        command  = command.encode("utf-8")
+        self.connection.send(command)
+        result =  self.connection.recv(1024)
+        result =  result.decode("utf-8")
+        result =  result.split(',')
+        
+        return result
+
     ###################
     ## PUBLIC SETTER ##
     ###################
@@ -64,19 +74,27 @@ class Player:
         command = '"setFrequency",' + str(frequency)+','+str(self.id)+'\n'
         command = command.encode("utf-8")
         self.connection.send(command)
+
+    def setHeadset(self,w=0,x=0,y=0,z=0):
+        command = '"setHeadset",'+str(w)+','+str(x)+','+str(y)+','+str(z)+','+str(self.id)+'\n'
+        command = command.encode("utf-8")
+        self.connection.send(command)
         
 #s = socket.socket()
 #s.connect(("192.168.1.8",1995))
-        
-p =  Player()
-hostName = socket.gethostbyname('localhost')
-p.connectToSever(hostName,1995)
-p.tagClient()
 
-while True:
-##    b = randint(1,50)
-    b = 5
-    p.setFrequency(b)
-    print('freq:' + str(p.getFrequency()) + ', velo:' + str(p.getVelocity()) +', pos:' + str(p.getPosition()))
-    #print(p.getPlayerState())
+if __name__ == '__main__':
+    p =  Player()
+    hostName = socket.gethostbyname('localhost')
+    p.connectToSever(hostName,1995)
+    p.tagClient()
+
+    while True:
+##      b = randint(1,50)
+        b = 5
+        p.setFrequency(b)
+        p.setHeadset(randint(1,50),randint(1,50),randint(1,50),randint(1,50))
+        print('freq:' + str(p.getFrequency()) + ', velo:' + str(p.getVelocity()) +', pos:' + str(p.getPosition()))
+        print("Headset: "+str(p.getHeadset()))
+        #print(p.getPlayerState())
     

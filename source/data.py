@@ -1,5 +1,5 @@
 from config import PLAYER_LIMIT
-
+from debugging import forcePrint
 # todo: create getter setter for GameData.
 
 class PLAYERSTATE:
@@ -48,6 +48,9 @@ class GameData:
     def setPosition(self, position, i):
         self.playerOf(i).setPosition(position)
 
+    def setHeadset(self,w,x,y,z,i):
+        self.playerOf(i).setHeadset(w,x,y,z)
+
     ####################
     ## PUBLIC GETTERS ##
     ####################
@@ -62,6 +65,9 @@ class GameData:
 
     def getPlayerState(self, i):
         return self.playerOf(i).getPlayerState()
+
+    def getHeadset(self,i):
+        return self.playerOf(i).getHeadset()
     
 class PlayerData:
     
@@ -69,6 +75,7 @@ class PlayerData:
         self.position =  0
         self.zVelocity = 0
         self.frequency = 0
+        self.headset = {}
         self.playerState = PLAYERSTATE.READY
 
     #################### - we may keep these methods 
@@ -86,9 +93,20 @@ class PlayerData:
     def setPosition(self,pos):
         self.position = pos
 
+    def setHeadset(self,w,x,y,z):
+        self.headset['w'] = w
+        self.headset['x'] = x
+        self.headset['y'] = y
+        self.headset['z'] = z
+        
+
     ####################
     ## PUBLIC GETTERS ##
     ####################
+    def getHeadset(self):
+        output = str(self.headset['w'])+','+str(self.headset['x'])+','+str(self.headset['y'])+','+str(self.headset['z'])
+        return output
+    
     def getFrequency(self):
         return self.frequency
         
