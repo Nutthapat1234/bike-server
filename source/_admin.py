@@ -7,13 +7,16 @@ class Admin:
     def connectToSever(self,ipAdress,port):
         self.connection.connect((ipAdress,port))
 
-a = Admin()
-hostName = socket.gethostbyname('localhost')
-a.connectToSever(hostName,1995)
+    def start(self):
+        command = "'start'," + "\n"
+        command = command.encode("utf-8")
+        self.connection.send(command)
 
-while True:
-    line = "'" + input() + "',\n" 
-##    line = input() 
-    line = line.encode('utf-8')
-    a.connection.send(line)
+    def reset(self):
+        command = '"reset",'+"\n"
+        command = command.encode("utf-8")
+        self.connection.send(command)
+
+
+
     
