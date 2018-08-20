@@ -1,3 +1,5 @@
+from time import time as currentTime
+
 from config import PLAYER_LIMIT
 from debugging import forcePrint
 # todo: create getter setter for GameData.
@@ -10,9 +12,10 @@ class PLAYERSTATE:
 
 class GAMESTATE:
     READY = 0
-    PLAYING_NO_WINNER = 1
-    FIRST_FINISHED = 2
-    ALL_FINISHED = 3
+    LAUNCHING = 1
+    PLAYING_NO_WINNER = 2
+    FIRST_FINISHED = 3
+    ALL_FINISHED = 4
 
 
 class GameData:
@@ -24,11 +27,13 @@ class GameData:
         print('game is reset')
         self.gameState = GAMESTATE.READY
         self.playerDataList = [ PlayerData() for i in range(PLAYER_LIMIT) ]
+        self.launchTime = 0
         
     def start( self ):
         print('game is started')
         if self.gameState is GAMESTATE.READY:
-            self.gameState = GAMESTATE.PLAYING_NO_WINNER
+            self.gameState = GAMESTATE.LAUNCHING
+        self.launchTime = currentTime()
 
     def playerOf(self, i):
         return self.playerDataList[i]
@@ -68,6 +73,9 @@ class GameData:
 
     def getHeadset(self,i):
         return self.playerOf(i).getHeadset()
+
+    def getPlayerString(self,i):
+        return self.playerOf(i).getPlayerString()
     
 class PlayerData:
     
@@ -75,7 +83,10 @@ class PlayerData:
         self.position =  0
         self.zVelocity = 0
         self.frequency = 0
-        self.headset = {}
+        self.headsetX = 0
+        self.headsetY = 0
+        self.headsetZ = 0
+        self.headsetW = 0
         self.playerState = PLAYERSTATE.READY
 
     #################### - we may keep these methods 
@@ -93,18 +104,18 @@ class PlayerData:
     def setPosition(self,pos):
         self.position = pos
 
-    def setHeadset(self,w,x,y,z):
-        self.headset['w'] = w
-        self.headset['x'] = x
-        self.headset['y'] = y
-        self.headset['z'] = z
+    def setHeadset(self,x,y,z,w):
+        self.headsetW = w
+        self.headsetX = x
+        self.headsetY = y
+        self.headsetZ = z
         
 
     ####################
     ## PUBLIC GETTERS ##
     ####################
     def getHeadset(self):
-        output = str(self.headset['w'])+','+str(self.headset['x'])+','+str(self.headset['y'])+','+str(self.headset['z'])
+        output = str(self.headsetX)+','+str(self.headsetY)+','+str(self.headsetZ)+','+str(self.headsetW)
         return output
     
     def getFrequency(self):
@@ -118,7 +129,9 @@ class PlayerData:
     
     def getPlayerState(self):
         return self.playerState
-    
+
+    def getPlayerString(self):
+        return str(self.playerState)+','+str(self.position)+','+str(self.zVelocity)+','+str(self.headsetX)+','+str(self.headsetY)+','+str(self.headsetZ)+','+str(self.headsetW)
 
 
         

@@ -17,7 +17,7 @@ class Server:
         self.gameData = GameData()
         self.calculationThread = GameCalculationThread( self.gameData, self.connectionList )
         self.calculationThread.start() 
-        self.calculationThread.startGame()
+##        self.calculationThread.startGame()
 
     def startConnection(self, ipAddr):
         self.socket.bind((ipAddr, PORT))
@@ -39,7 +39,7 @@ class Server:
             if exc is not None:
                 self.connectionList.remove(client)
                 client.exit()
-                print("remove one")
+                print("remove disconnected client")
 
         for client in toRemove:
             self.connectionList.remove(client)

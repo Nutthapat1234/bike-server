@@ -1,7 +1,7 @@
 import socket
 import threading
 
-from debugging import print
+from debugging import print, forcePrint
 from config import PORT
 
 class CommunicationThread(threading.Thread):
@@ -29,6 +29,8 @@ class CommunicationThread(threading.Thread):
                 buffer = data.split('\n')
                 buffer = buffer[:-1]
 
+                print('received data', data)
+
                 while len(buffer) > 0:
                     command = buffer.pop(0)
                     print('execute command:', command, ': from', self.address[0])
@@ -36,7 +38,8 @@ class CommunicationThread(threading.Thread):
 ##                    threading.Thread(target=self.respondClient,args=[command]).start()
     
         except socket.error as msg:
-            while self.__isRunning:  
+            while self.__isRunning:
+                self.exit()
                 self.connection.close()
                 self.exception = ConnectionResetError()
             
@@ -92,7 +95,7 @@ class CommunicationThread(threading.Thread):
             
         except Exception as e:
             print('error found for request:', strDataIn)
-            print('with exception:', e.format_exc())
+            print('with exception:', e)
             
             return None
 

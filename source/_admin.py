@@ -12,7 +12,8 @@ hostName = socket.gethostbyname('localhost')
 a.connectToSever(hostName,1995)
 
 while True:
-    line = input()
+    line = "'" + input() + "',\n" 
+##    line = input() 
     line = line.encode('utf-8')
-    p.connection.send(line)
+    a.connection.send(line)
     

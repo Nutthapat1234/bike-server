@@ -75,8 +75,8 @@ class Player:
         command = command.encode("utf-8")
         self.connection.send(command)
 
-    def setHeadset(self,w=0,x=0,y=0,z=0):
-        command = '"setHeadset",'+str(w)+','+str(x)+','+str(y)+','+str(z)+','+str(self.id)+'\n'
+    def setHeadset(self,x=0,y=0,z=0,w=0):
+        command = '"setHeadset",'+str(x)+','+str(y)+','+str(z)+','+str(w)+','+str(self.id)+'\n'
         command = command.encode("utf-8")
         self.connection.send(command)
         

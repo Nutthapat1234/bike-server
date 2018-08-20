@@ -1,8 +1,8 @@
 import threading
 from time import time as currentTime
 
-from debugging import print
-from config import FREQ_TO_VELOCITY, PLAYER_LIMIT, ENDING_POSITION
+from debugging import print, forcePrint
+from config import FREQ_TO_VELOCITY, PLAYER_LIMIT, ENDING_POSITION, BROADCAST_DELAY
 from data import GameData, PLAYERSTATE, GAMESTATE
 
 class GameCalculationThread(threading.Thread):
@@ -22,14 +22,11 @@ class GameCalculationThread(threading.Thread):
         
         while True:
             self.deltaTime = self.__calculateDeltaTime()
-
-            if self.gameData.gameState is GAMESTATE.READY:
-                continue
             
             self.__updateGame(self.deltaTime)
             self.__updateTimeStamp()
-            if currentTime() - self.lastSent >= 0.05:
-                #self.__broadcastGameData()
+            if currentTime() - self.lastSent >= BROADCAST_DELAY:
+                self.__broadcastGameData()
                 self.lastSent = currentTime()
 
 
@@ -37,16 +34,16 @@ class GameCalculationThread(threading.Thread):
     ## PRIVATE HELPERS ##
     #####################
     def __broadcastGameData(self):
-        gameString = ''
+        
+        gameString = str(self.gameData.gameState) + '|'
+        
         for playerData in self.gameData.playerDataList:
-            playerString = str(playerData.getPosition()) + ','
-            playerString += str(playerData.getVelocity())+ ','
-            playerString += str(playerData .getHeadset())           
 
             if playerData == self.gameData.playerDataList[0]:
-                gameString += playerString
+                gameString += playerData.getPlayerString()
+                #state, pos, velo, x, y, z, w
             else:
-                gameString += '|' + playerString
+                gameString += '|' + playerData.getPlayerString()
 
         gameString += '\n'
         
@@ -61,11 +58,22 @@ class GameCalculationThread(threading.Thread):
         return currentTime() - self.previousTimeStamp
     
     def __updateGame(self, deltaTime):
+        if self.gameData.gameState is GAMESTATE.READY:
+            return
+
+        GameCalculator.updateGameState( self.gameData )
+        
+        if self.gameData.gameState is GAMESTATE.LAUNCHING:
+            return
+        
         for player in self.gameData.playerDataList:
             GameCalculator.updatePlayerPosition( player, deltaTime )
             GameCalculator.updatePlayerState( player )
 
+        #double check
         GameCalculator.updateGameState( self.gameData )
+
+
 
     def __updateTimeStamp(self):
         self.previousTimeStamp = currentTime()
@@ -136,7 +144,9 @@ class GameCalculator:
                 someFinished = True
 
         # assuming this method won't be called while gameState is READY
-        if allFinished:
+        if allReady and currentTime() - gameData.launchTime < 3:
+            updatedState = GAMESTATE.LAUNCHING
+        elif allFinished:
             updatedState = GAMESTATE.ALL_FINISHED
         elif someFinished:
             updatedState = GAMESTATE.FIRST_FINISHED
