@@ -53,6 +53,8 @@ class GameCalculationThread(threading.Thread):
             if connection.exception is not None:
                 continue            
             connection.send(gameString)
+
+        print(gameString)
         
     def __calculateDeltaTime(self):
         return currentTime() - self.previousTimeStamp
@@ -108,6 +110,7 @@ class GameCalculator:
         currentPosition = player.getPosition()
         
         if currentFrequency is not 0:
+##            forcePrint(currentFrequency)
             updatedVelocity = FREQ_TO_VELOCITY * currentFrequency
             updatedPosition = currentPosition + updatedVelocity * deltaTime
             player.setVelocity( updatedVelocity )

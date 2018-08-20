@@ -20,11 +20,16 @@ class CommunicationThread(threading.Thread):
     ## OVERRIDE ##
     ##############
     def run(self):
-        print('start handling gameClientConnection', self.address)
+        forcePrint('start handling client', self.address)
 
         try:
             while self.__isRunning:
                 data = self.connection.recv(1024)
+
+                if not data:
+                    self.closeConnection(1)
+                    break;
+                
                 data = data.decode('utf-8')
                 buffer = data.split('\n')
                 buffer = buffer[:-1]
@@ -38,12 +43,14 @@ class CommunicationThread(threading.Thread):
 ##                    threading.Thread(target=self.respondClient,args=[command]).start()
     
         except socket.error as msg:
-            while self.__isRunning:
-                self.exit()
-                self.connection.close()
-                self.exception = ConnectionResetError()
-            
-                          
+            self.closeConnection(msg)
+
+    def closeConnection(self, exception):
+        forcePrint('close a connection', 'client:',self.isClient)
+        self.exit()
+        self.connection.close()
+        self.exception = exception
+        
     def respondClient(self,data):
         result = self.__executeCommand(data)
         
@@ -54,8 +61,8 @@ class CommunicationThread(threading.Thread):
         print('send result', s)
         try:
             self.connection.send(str.encode(s))
-        except socket.error :
-            self.exception = ConnectionResetError()
+        except socket.error as msg:
+            self.closeConnection(msg)
         
     ############
     ## PUBLIC ##
@@ -123,9 +130,6 @@ class CommunicationThread(threading.Thread):
 
         if header == 'start':
             return self.shareGameData.start
-
-        if header == 'setPlayerTag':
-            return self.shareGameData.setPlayerTag
         
         #client actions
         return getattr(self.shareGameData, header)

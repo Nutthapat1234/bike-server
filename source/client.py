@@ -1,5 +1,6 @@
 import socket
 from random import randint
+from config import IP, PORT
 
 class Player:
     def __init__(self):
@@ -85,8 +86,8 @@ class Player:
 
 if __name__ == '__main__':
     p =  Player()
-    hostName = socket.gethostbyname('localhost')
-    p.connectToSever(hostName,1995)
+    hostName = socket.gethostbyname(IP)
+    p.connectToSever(hostName,PORT)
     p.tagClient()
 
     while True:
