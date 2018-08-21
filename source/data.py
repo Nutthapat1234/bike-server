@@ -168,9 +168,6 @@ class PlayerData:
         return self.playerState
 
     def getPlayerString(self):
-<<<<<<< HEAD
-        return str(self.playerState)+','+str(self.position)+','+str(self.zVelocity)+','+str(self.headsetX)+','+str(self.headsetY)+','+str(self.headsetZ)+','+str(self.headsetW)
-=======
         return str(self.playerState)+','+format(self.position,'.10f')+','+str(self.zVelocity)+','+str(self.headsetX)+','+str(self.headsetY)+','+str(self.headsetZ)+','+str(self.headsetW)
 
 
@@ -178,4 +175,3 @@ class PlayerData:
 
         
         
->>>>>>> master

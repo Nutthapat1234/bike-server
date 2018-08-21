@@ -2,6 +2,7 @@ from tkinter import*
 import threading
 import socket
 from config import IP, PORT
+
 class Admin:
     def __init__(self):
         self.connection = socket.socket()
@@ -22,7 +23,6 @@ class Admin:
         command = command.encode("utf-8")
         self.sendToSever(command)
 
-<<<<<<< HEAD
     def sendToSever(self,command):
         try:
             self.connection.send(command)
@@ -52,16 +52,4 @@ if __name__ == "__main__":
     resetButt = Button(windows,text="Reset",command = admin.reset,height = 20,width=50).pack(fill=BOTH)
     
     windows.mainloop()
-=======
-    
-if __name__ == '__main__':
-    admin = Admin()
-    hostname = socket.gethostbyname(IP)
-    admin.connectToSever(hostname,PORT)
-    while True:
-        line = input()
-        if line == 'start':
-            admin.start()
-        if line == 'reset':
-            admin.reset()
->>>>>>> master
+
