@@ -76,7 +76,44 @@ class GameData:
 
     def getPlayerString(self,i):
         return self.playerOf(i).getPlayerString()
-    
+
+    ####################
+    ## short Function ##
+    ####################
+    def sf(self,freq,i):
+        self.setFrequency(freq,i)
+
+    def gf(self,i):
+        self.getFrequency(i)
+
+    def sv(self,v,i):
+        self.setVelocity(v)
+        
+    def gv(self,i):
+        self.getVelocity(i)
+
+    def sps(self,s,i):
+        self.setPlayerState(s,i)
+
+    def gps(self,i):
+        self.getPlayerState(i)
+
+    def spo(self,p,i):
+        self.setPlayerPosition(p,i)
+
+    def gpo(self,i):
+        self.getPlayerPosition(i)
+
+    def sh(self,w,x,y,z,i):
+        self.setHeadset(w,x,y,z,i)
+
+    def gh(self,i):
+        self.getHeadset(i)
+
+    def gp(self,i):
+        self.getPlayerString(i)
+
+
 class PlayerData:
     
     def __init__(self):
@@ -132,9 +169,3 @@ class PlayerData:
 
     def getPlayerString(self):
         return str(self.playerState)+','+str(self.position)+','+str(self.zVelocity)+','+str(self.headsetX)+','+str(self.headsetY)+','+str(self.headsetZ)+','+str(self.headsetW)
-
-
-        
-
-        
-        
