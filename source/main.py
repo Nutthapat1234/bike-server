@@ -2,7 +2,8 @@ import socket
 import threading
 from time import sleep as delay
 
-from debugging import print, forcePrint
+from debugging import print
+from debugging import forcePrint
 from data import GameData
 from communication import CommunicationThread
 from calculation import GameCalculationThread
@@ -68,6 +69,7 @@ class Server:
                 print('connection reset error', msg)
             
 if __name__ == '__main__':
+##    delay(10)
 ##    hostName = socket.gethostbyname(socket.gethostname())
 ##    hostName = socket.gethostbyname('localhost')
     hostName = socket.gethostbyname(IP)

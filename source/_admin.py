@@ -1,5 +1,7 @@
 import socket
 from config import IP, PORT
+from time import sleep as delay
+
 class Admin:
     def __init__(self):
         self.connection = socket.socket()
@@ -15,9 +17,10 @@ class Admin:
     def reset(self):
         command = '"reset",'+"\n"
         command = command.encode("utf-8")
-        self.connection.send(command)
+        for i in range(10):
+            self.connection.send(command)
+            delay(0.05)
 
-    
 if __name__ == '__main__':
     admin = Admin()
     hostname = socket.gethostbyname(IP)

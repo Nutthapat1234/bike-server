@@ -2,7 +2,7 @@ import threading
 from time import time as currentTime
 
 from debugging import print, forcePrint
-from config import FREQ_TO_VELOCITY, PLAYER_LIMIT, ENDING_POSITION, BROADCAST_DELAY
+from config import FREQ_TO_VELOCITY, PLAYER_LIMIT, ENDING_POSITION, BROADCAST_DELAY, LAUNCH_TIME
 from data import GameData, PLAYERSTATE, GAMESTATE
 
 class GameCalculationThread(threading.Thread):
@@ -147,7 +147,7 @@ class GameCalculator:
                 someFinished = True
 
         # assuming this method won't be called while gameState is READY
-        if allReady and currentTime() - gameData.launchTime < 3:
+        if allReady and currentTime() - gameData.launchTime < LAUNCH_TIME:
             updatedState = GAMESTATE.LAUNCHING
         elif allFinished:
             updatedState = GAMESTATE.ALL_FINISHED
