@@ -6,7 +6,7 @@ from debugging import print, forcePrint
 from data import GameData
 from communication import CommunicationThread
 from calculation import GameCalculationThread
-from config import CLIENT_LIMIT, PLAYER_LIMIT, PORT
+from config import CLIENT_LIMIT, PLAYER_LIMIT, PORT, IP
 
 class Server:
     def __init__(self):
@@ -39,14 +39,14 @@ class Server:
             if exc is not None:
                 self.connectionList.remove(client)
                 client.exit()
-                print("remove disconnected client")
+                forcePrint("remove disconnected client")
 
         for client in toRemove:
             self.connectionList.remove(client)
 
     def __waitAndAcceptNewClient(self):
         conn, addr = self.socket.accept()            
-        print("new client connected from : " + str(addr))
+        forcePrint("new client connected from : " + str(addr))
         
         newCommuThread = CommunicationThread(conn, addr,self.gameData)
         newCommuThread.start()
@@ -69,7 +69,8 @@ class Server:
             
 if __name__ == '__main__':
 ##    hostName = socket.gethostbyname(socket.gethostname())
-    hostName = socket.gethostbyname('localhost')
+##    hostName = socket.gethostbyname('localhost')
+    hostName = socket.gethostbyname(IP)
     
     server = Server()
     server.startConnection(hostName)
