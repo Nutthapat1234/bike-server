@@ -1,14 +1,13 @@
-setVelocity
+To configure connection/calculation/debugging details, edit constant values within “config.py”
+——————————————————————————————
 
-posChange
+The server interprets each incoming line as a command
 
-getGameState
-“’getGameState’,”
+to start the game, send the following line
+“‘start’,\n”
 
-getPosition
+to reset the game
+“‘reset’,\n”
 
-getVelocity
-
-setGameState
-
-setPlayerState
+to set bike wheel frequency 5.2hz for player 0
+“‘setFrequency’, 5.2, 0”
